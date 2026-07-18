@@ -2,11 +2,20 @@ import { useState } from "react";
 import Button from "../common/Button";
 import Input from "../common/Input";
 
+type Repository = {
+  name: string;
+  owner: string;
+  description: string;
+  stars: number;
+  forks: number;
+  language: string;
+};
+
 
 export default function Hero() {
 
   const [repoUrl, setRepoUrl] = useState("");
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState<Repository | null>(null);
 
   const handleAnalyze = async () => {
     try {
@@ -22,7 +31,10 @@ export default function Hero() {
 
       const data = await response.json();
 
-      setResult(data.message);
+      console.log(data);
+
+      setResult(data);
+
     } catch (error) {
       console.error(error);
     }
@@ -56,8 +68,20 @@ export default function Hero() {
         </Button>
       </div>
       {result && (
-        <div className="mt-8 rounded-lg bg-green-100 p-4 text-green-800">
-          {result}
+        <div className="mt-8 w-full max-w-3xl rounded-xl border border-slate-200 bg-white p-6 shadow-md">
+          <h2 className="text-2xl font-bold">
+            {result.owner}/{result.name}
+          </h2>
+
+          <p className="mt-3 text-slate-600">
+            {result.description}
+          </p>
+
+          <div className="mt-5 flex flex-wrap gap-6 text-lg">
+            <span>⭐ {result.stars}</span>
+            <span>🍴 {result.forks}</span>
+            <span>💻 {result.language}</span>
+          </div>
         </div>
       )}
 

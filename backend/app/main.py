@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from app.utils.github import parse_github_url
+from app.utils.github_api import fetch_repository
 
 app = FastAPI()
 app.add_middleware(
@@ -33,8 +35,19 @@ def health():
 
 @app.post("/analyze")
 def analyze_repo(request: RepoRequest):
-    return {
-        "status": "success",
-        "message": "Repository received successfully!",
-        "repository": request.repo
-    }
+
+    parsed = parse_github_url(request.repo)
+
+    if parsed is None:
+        return {
+            "status": "error",
+            "message": "Invalid GitHub repository URL."
+        }
+
+    owner, repo = parsed
+
+    repository = fetch_repository(owner, repo)
+
+    print("Repository returned:", repository)
+
+    return repository
