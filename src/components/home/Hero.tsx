@@ -1,24 +1,18 @@
 import { useState } from "react";
 import Button from "../common/Button";
 import Input from "../common/Input";
-
-type Repository = {
-  name: string;
-  owner: string;
-  description: string;
-  stars: number;
-  forks: number;
-  language: string;
-};
-
+import RepositoryCard from "../repository/RepositoryCard";
+import type { Repository } from "../../types/repository";
 
 export default function Hero() {
 
   const [repoUrl, setRepoUrl] = useState("");
   const [result, setResult] = useState<Repository | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAnalyze = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch("http://127.0.0.1:8000/analyze", {
         method: "POST",
         headers: {
@@ -34,9 +28,11 @@ export default function Hero() {
       console.log(data);
 
       setResult(data);
+      setIsLoading(false);
 
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
     }
   };
 
@@ -63,27 +59,14 @@ export default function Hero() {
           placeholder="https://github.com/facebook/react"
         />
 
-        <Button onClick={handleAnalyze}>
-          Analyze Repository →
+        <Button
+          onClick={handleAnalyze}
+          disabled={isLoading}
+        >
+          {isLoading ? "Analyzing..." : "Analyze Repository →"}
         </Button>
       </div>
-      {result && (
-        <div className="mt-8 w-full max-w-3xl rounded-xl border border-slate-200 bg-white p-6 shadow-md">
-          <h2 className="text-2xl font-bold">
-            {result.owner}/{result.name}
-          </h2>
-
-          <p className="mt-3 text-slate-600">
-            {result.description}
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-6 text-lg">
-            <span>⭐ {result.stars}</span>
-            <span>🍴 {result.forks}</span>
-            <span>💻 {result.language}</span>
-          </div>
-        </div>
-      )}
+      {result && <RepositoryCard repository={result} />}
 
     </section>
   );
