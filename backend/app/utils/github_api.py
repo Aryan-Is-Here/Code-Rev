@@ -1,5 +1,5 @@
 import requests
-
+import base64
 
 def fetch_repository(owner: str, repo: str):
     url = f"https://api.github.com/repos/{owner}/{repo}"
@@ -33,5 +33,22 @@ def fetch_languages(owner: str, repo: str):
 
     data = response.json()
 
-    return list(data.keys())
+    languages = list(data.keys())
 
+    return languages[:5]
+
+def fetch_readme(owner: str, repo: str):
+    url = f"https://api.github.com/repos/{owner}/{repo}/readme"
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        return None
+
+    data = response.json()
+
+    content = base64.b64decode(
+        data["content"]
+    ).decode("utf-8")
+
+    return content

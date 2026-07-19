@@ -3,6 +3,7 @@ import Button from "../common/Button";
 import Input from "../common/Input";
 import RepositoryCard from "../repository/RepositoryCard";
 import type { Repository } from "../../types/repository";
+import AnalysisCard from "../repository/AnalysisCard";
 
 export default function Hero() {
 
@@ -67,6 +68,7 @@ export default function Hero() {
         </Button>
       </div>
       {result && <RepositoryCard repository={result} />}
+      {result && <AnalysisCard analysis={result.analysis} />}
 
     </section>
   );

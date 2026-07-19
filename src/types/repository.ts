@@ -9,4 +9,10 @@ export type Repository = {
   avatar: string;
   html_url: string;
   updated_at: string;
+  analysis: {
+    summary: string;
+    strengths: string[];
+    improvements: string[];
+    score: number;
+  };
 };
