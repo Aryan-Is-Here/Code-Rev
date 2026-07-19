@@ -61,9 +61,9 @@ def analyze_repo(request: RepoRequest):
     prompt = build_prompt(repository, readme)
     analysis = analyze_repository(prompt)
 
-    print("\n========== AI PROMPT ==========\n")
-    print(prompt[:1200])
-    print("\n===============================\n")
+    print("\n===== AI RESPONSE =====\n")
+    print(analysis)
+    print("\n=======================\n")
 
     print("\n===== README Preview =====")
     print(readme[:500] if readme else "README not found")
