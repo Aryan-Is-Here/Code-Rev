@@ -6,9 +6,11 @@ from app.utils.github_api import (
     fetch_repository,
     fetch_languages,
     fetch_readme,
+    fetch_file_tree,
 )
 from app.ai.prompt import build_prompt
 from app.ai.analyzer import analyze_repository
+from app.ai.context_builder import build_repository_context
 
 app = FastAPI()
 app.add_middleware(
@@ -53,21 +55,20 @@ def analyze_repo(request: RepoRequest):
     owner, repo = parsed
 
     repository = fetch_repository(owner, repo)
+    print("Repository:", repository)
     languages = fetch_languages(owner, repo)
     
     repository["languages"] = languages
 
     readme = fetch_readme(owner, repo)
-    prompt = build_prompt(repository, readme)
+    file_tree = fetch_file_tree(owner, repo)
+    context = build_repository_context(file_tree)
+    prompt = build_prompt(repository, readme, context)
     analysis = analyze_repository(prompt)
 
     print("\n===== AI RESPONSE =====\n")
     print(analysis)
     print("\n=======================\n")
-
-    print("\n===== README Preview =====")
-    print(readme[:500] if readme else "README not found")
-    print("==========================\n")
 
     print("Repository returned:", repository)
 
