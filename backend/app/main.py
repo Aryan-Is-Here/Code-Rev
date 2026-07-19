@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from app.utils.github import parse_github_url
-from app.utils.github_api import fetch_repository
+from app.utils.github_api import fetch_repository, fetch_languages
 
 app = FastAPI()
 app.add_middleware(
@@ -47,7 +47,10 @@ def analyze_repo(request: RepoRequest):
     owner, repo = parsed
 
     repository = fetch_repository(owner, repo)
+    languages = fetch_languages(owner, repo)
 
     print("Repository returned:", repository)
+
+    repository["languages"] = languages
 
     return repository

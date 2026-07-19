@@ -18,4 +18,20 @@ def fetch_repository(owner: str, repo: str):
         "stars": data["stargazers_count"],
         "forks": data["forks_count"],
         "language": data["language"],
+        "avatar": data["owner"]["avatar_url"],
+        "html_url": data["html_url"],
+        "updated_at": data["updated_at"],
     }
+
+def fetch_languages(owner: str, repo: str):
+    url = f"https://api.github.com/repos/{owner}/{repo}/languages"
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+
+    return list(data.keys())
+
