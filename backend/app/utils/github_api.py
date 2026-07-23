@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+print("Token loaded:", GITHUB_TOKEN is not None)
+print("Token prefix:", GITHUB_TOKEN[:12] if GITHUB_TOKEN else None)
 
 if not GITHUB_TOKEN:
     raise RuntimeError("GITHUB_TOKEN not found in .env")

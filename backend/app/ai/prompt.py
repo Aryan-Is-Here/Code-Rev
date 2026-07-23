@@ -2,13 +2,14 @@ def build_prompt(
     repository: dict,
     readme: str,
     context: dict,
+    technology_info: dict,
 ):
     prompt = f"""
-You are a senior software engineer performing a professional code review.
+You are a senior software engineer reviewing a GitHub repository.
 
-Analyze the following GitHub repository using ONLY the information provided.
+Analyze the repository using ONLY the information provided below.
 
-Repository Name:
+Repository:
 {repository["owner"]}/{repository["name"]}
 
 Description:
@@ -19,6 +20,12 @@ Primary Language:
 
 Languages:
 {", ".join(repository["languages"])}
+
+Detected Technologies:
+{", ".join(technology_info["technologies"])}
+
+Detected Features:
+{", ".join(technology_info["features"])}
 
 Important Files:
 {chr(10).join(context["important_files"])}
@@ -31,12 +38,12 @@ README:
 
 Instructions:
 
-- Identify what kind of software this repository is.
-- Base your observations on the repository metadata, README, languages, important files, and directory structure.
-- Avoid generic advice that could apply to every project.
+- Explain what this repository appears to be.
+- Base every conclusion only on the information above.
 - Mention repository-specific strengths whenever possible.
-- Suggest realistic improvements based on the available context.
-- Give a score between 0 and 100.
+- Suggest realistic improvements.
+- Avoid generic advice unless supported by the repository context.
+- Give an overall quality score between 0 and 100.
 
 Return ONLY valid JSON.
 

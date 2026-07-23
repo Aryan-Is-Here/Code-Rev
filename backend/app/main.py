@@ -11,6 +11,9 @@ from app.utils.github_api import (
 from app.ai.prompt import build_prompt
 from app.ai.analyzer import analyze_repository
 from app.ai.context_builder import build_repository_context
+from app.utils.file_fetcher import fetch_file
+from app.utils.dependency_parser import parse_package_json
+from app.ai.technology_detector import detect_technologies
 
 app = FastAPI()
 app.add_middleware(
@@ -63,7 +66,26 @@ def analyze_repo(request: RepoRequest):
     readme = fetch_readme(owner, repo)
     file_tree = fetch_file_tree(owner, repo)
     context = build_repository_context(file_tree)
-    prompt = build_prompt(repository, readme, context)
+    technology_info = detect_technologies(file_tree)
+    print("\n===== TECHNOLOGY DETECTOR =====")
+    print(technology_info)
+    print("===============================\n")
+    package_json = fetch_file(
+        owner,
+        repo,
+        "package.json",
+    )
+    package_info = parse_package_json(package_json)
+    print("\n===== PACKAGE INFO =====")
+    print(package_info)
+    print("========================\n")
+    context = build_repository_context(file_tree)
+    prompt = build_prompt(
+        repository,
+        readme,
+        context,
+        technology_info,
+    )
     analysis = analyze_repository(prompt)
 
     print("\n===== AI RESPONSE =====\n")

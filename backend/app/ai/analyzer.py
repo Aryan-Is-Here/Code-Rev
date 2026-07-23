@@ -10,6 +10,10 @@ def analyze_repository(prompt: str):
                 "content": prompt,
             }
         ],
+        format="json",
+        options={
+            "temperature": 0,
+        },
     )
 
     content = response["message"]["content"]
@@ -18,7 +22,18 @@ def analyze_repository(prompt: str):
     print(content)
     print("\n=====================================\n")
 
-    content = content.replace("```json", "")
-    content = content.replace("```", "").strip()
+    data = json.loads(content)
 
-    return json.loads(content)
+    required_keys = {
+        "summary",
+        "strengths",
+        "improvements",
+        "score",
+    }
+
+    missing = required_keys - set(data.keys())
+
+    if missing:
+        raise ValueError(f"Missing keys: {missing}")
+
+    return data
