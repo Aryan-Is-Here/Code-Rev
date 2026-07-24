@@ -1,9 +1,16 @@
+import os
 import json
+
+from dotenv import load_dotenv
 from ollama import chat
+
+load_dotenv()
+MODEL_NAME = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:3b")
+print(f"\nUsing Ollama model: {MODEL_NAME}\n")
 
 def analyze_repository(prompt: str):
     response = chat(
-        model="qwen2.5-coder:3b",
+        model=MODEL_NAME,
         messages=[
             {
                 "role": "user",

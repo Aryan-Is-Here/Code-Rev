@@ -2,18 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from app.utils.github import parse_github_url
-from app.utils.github_api import (
-    fetch_repository,
-    fetch_languages,
-    fetch_readme,
-    fetch_file_tree,
-)
-from app.ai.prompt import build_prompt
-from app.ai.analyzer import analyze_repository
-from app.ai.context_builder import build_repository_context
-from app.utils.file_fetcher import fetch_file
-from app.utils.dependency_parser import parse_package_json
-from app.ai.technology_detector import detect_technologies
+from app.services.repository_service import analyze_github_repository
 
 app = FastAPI()
 app.add_middleware(
@@ -57,43 +46,12 @@ def analyze_repo(request: RepoRequest):
 
     owner, repo = parsed
 
-    repository = fetch_repository(owner, repo)
-    print("Repository:", repository)
-    languages = fetch_languages(owner, repo)
-    
-    repository["languages"] = languages
+    repository = analyze_github_repository(owner, repo)
 
-    readme = fetch_readme(owner, repo)
-    file_tree = fetch_file_tree(owner, repo)
-    context = build_repository_context(file_tree)
-    technology_info = detect_technologies(file_tree)
-    print("\n===== TECHNOLOGY DETECTOR =====")
-    print(technology_info)
-    print("===============================\n")
-    package_json = fetch_file(
-        owner,
-        repo,
-        "package.json",
-    )
-    package_info = parse_package_json(package_json)
-    print("\n===== PACKAGE INFO =====")
-    print(package_info)
-    print("========================\n")
-    context = build_repository_context(file_tree)
-    prompt = build_prompt(
-        repository,
-        readme,
-        context,
-        technology_info,
-    )
-    analysis = analyze_repository(prompt)
-
-    print("\n===== AI RESPONSE =====\n")
-    print(analysis)
-    print("\n=======================\n")
-
-    print("Repository returned:", repository)
-
-    repository["analysis"] = analysis
+    if repository is None:
+        return {
+            "status": "error",
+            "message": "Repository not found."
+        }
 
     return repository
