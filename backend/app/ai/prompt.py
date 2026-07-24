@@ -3,7 +3,21 @@ def build_prompt(
     readme: str,
     context: dict,
     technology_info: dict,
+    important_code: dict,
 ):
+    code_section = ""
+
+    for filename, content in important_code.items():
+
+        code_section += f"""
+
+    ========================
+    FILE: {filename}
+    ========================
+
+    {content[:2500]}
+
+"""
     prompt = f"""
 You are a senior software engineer reviewing a GitHub repository.
 
@@ -35,6 +49,9 @@ Project Directories:
 
 README:
 {readme[:4000]}
+
+Source Code:
+{code_section}
 
 Instructions:
 
